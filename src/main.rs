@@ -8,7 +8,7 @@ use rust_space_invaders::{
     frame::{self, new_frame, Drawable},
     invaders::Invaders,
     player::Player,
-    render,
+    render, EXPLODE_SOUND, LOSE_SOUND, MOVE_SOUND, PEW_SOUND, STARTUP_SOUND, WIN_SOUND,
 };
 use rusty_audio::Audio;
 use std::{
@@ -21,14 +21,14 @@ use std::{
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut audio = Audio::new();
-    audio.add("explode", "./sounds/explode.wav");
-    audio.add("lose", "./sounds/lose.wav");
-    audio.add("move", "./sounds/move.wav");
-    audio.add("pew", "./sounds/pew.wav");
-    audio.add("startup", "./sounds/startup.wav");
-    audio.add("win", "./sounds/win.wav");
+    audio.add(EXPLODE_SOUND.name, EXPLODE_SOUND.path);
+    audio.add(LOSE_SOUND.name, LOSE_SOUND.path);
+    audio.add(MOVE_SOUND.name, MOVE_SOUND.path);
+    audio.add(PEW_SOUND.name, PEW_SOUND.path);
+    audio.add(STARTUP_SOUND.name, STARTUP_SOUND.path);
+    audio.add(WIN_SOUND.name, WIN_SOUND.path);
 
-    audio.play("startup");
+    audio.play(STARTUP_SOUND.name);
 
     //Terminal
     let mut stdout = io::stdout();
@@ -68,7 +68,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     KeyCode::Right => player.move_right(),
                     KeyCode::Char(' ') | KeyCode::Enter => {
                         if player.shoot() {
-                            audio.play("pew");
+                            audio.play(PEW_SOUND.name);
                         }
                     }
                     KeyCode::Esc | KeyCode::Char('q') => {
@@ -83,10 +83,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Updates
         player.update(delta);
         if invaders.update(delta) {
-            audio.play("move");
+            audio.play(MOVE_SOUND.name);
         }
         if player.detect_hits(&mut invaders) {
-            audio.play("explode");
+            audio.play(EXPLODE_SOUND.name);
         }
 
         // Draw & render
@@ -101,11 +101,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         //Win or lose
         if invaders.all_killed() {
-            audio.play("win");
+            audio.play(WIN_SOUND.name);
             break 'gameloop;
         }
         if invaders.reached_bottom() {
-            audio.play("lose");
+            audio.play(LOSE_SOUND.name);
             break 'gameloop;
         }
     }
